@@ -1,0 +1,193 @@
+name: Step-by-Step Grading
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  grading:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+
+      uses: actions/setup-python@v4
+
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+
+      run: |
+        pip install pytest
+
+        if [ -f "requirements.txt" ]; then
+
+          pip install -r requirements.txt
+
+        fi
+
+    # 问题1测试 ▼▼▼
+
+    - name: Test Problem1
+
+      id: p1
+
+      run: |
+        if [ ! -d "Problem1" ]; then
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+          echo "::warning::Problem1目录不存在"
+          exit 0
+
+        fi
+
+        
+        cd Problem1
+
+        if pytest test.py -q; then
+
+          echo "score=20" >> $GITHUB_OUTPUT
+
+        else
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+        fi
+
+    # 问题2测试 ▼▼▼
+
+    - name: Test Problem2
+
+      id: p2
+
+      run: |
+        if [ ! -d "Problem2" ]; then
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+          echo "::warning::Problem2目录不存在"
+          exit 0
+
+        fi
+
+        
+        cd Problem2
+
+        if pytest test.py -q; then
+
+          echo "score=20" >> $GITHUB_OUTPUT
+
+        else
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+        fi
+
+    # 问题3-5的测试步骤类似，此处省略 ▼▼▼
+    - name: Test Problem3
+
+      id: p3
+
+      run: |
+        if [ ! -d "Problem3" ]; then
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+          echo "::warning::Problem3目录不存在"
+          exit 0
+
+        fi
+
+        
+        cd Problem3
+
+        if pytest test.py -q; then
+
+          echo "score=20" >> $GITHUB_OUTPUT
+
+        else
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+        fi
+        
+    - name: Test Problem4
+
+      id: p4
+
+      run: |
+        if [ ! -d "Problem4" ]; then
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+          echo "::warning::Problem3目录不存在"
+          exit 0
+
+        fi
+
+        
+        cd Problem4
+
+        if pytest test.py -q; then
+
+          echo "score=20" >> $GITHUB_OUTPUT
+
+        else
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+        fi
+
+    - name: Test Problem5
+
+      id: p5
+
+      run: |
+        if [ ! -d "Problem5" ]; then
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+          echo "::warning::Problem3目录不存在"
+          exit 0
+
+        fi
+
+        
+        cd Problem5
+
+        if pytest test.py -q; then
+
+          echo "score=20" >> $GITHUB_OUTPUT
+
+        else
+
+          echo "score=0" >> $GITHUB_OUTPUT
+
+        fi
+    
+    - name: Show Results
+
+      run: |
+        total=$(( ${{ steps.p1.outputs.score }} + 
+                 ${{ steps.p2.outputs.score }} +
+                 ${{ steps.p3.outputs.score }} +
+                 ${{ steps.p4.outputs.score }} +
+                 ${{ steps.p5.outputs.score }} 
+                 ))
+        
+        echo "================ 评分报告 ================"
+
+        echo "问题1得分: ${{ steps.p1.outputs.score }}/20"
+        echo "问题2得分: ${{ steps.p2.outputs.score }}/20"
+        echo "问题3得分: ${{ steps.p3.outputs.score }}/20"
+        echo "问题4得分: ${{ steps.p4.outputs.score }}/20"
+        echo "问题5得分: ${{ steps.p5.outputs.score }}/20"
+
+        echo ""
+        echo "总分: $total/100"
+        echo "=========================================="
